@@ -46,10 +46,10 @@ void codificar(const string& nombreArchivo, int semilla, int metodo, int tipo) {
     }
 
     string resultado;
-
+    unsigned long pos = 0;
     if (metodo == 1) {
         // --- PRIMER MÉTODO ---
-        unsigned long pos = 0;
+        pos = 0;
         string bloqueAnterior = "";
         string bloqueCodi = "";
 
@@ -78,8 +78,23 @@ void codificar(const string& nombreArchivo, int semilla, int metodo, int tipo) {
             bloqueAnterior = bloque;
             pos += semilla;
         }
+    }
+    else if (metodo == 2) {
+        // --- SEGUNDO MÉTODO ---
+        pos = 0;
+        while (pos < bits.size()) {
+            string bloque = bits.substr(pos, semilla);
 
-    } else {
+            if (bloque.empty()) break;
+            char ultimo = bloque.back();
+            bloque.pop_back();
+            bloque.insert(bloque.begin(), ultimo);
+
+            resultado += bloque;
+            pos += semilla;
+        }
+    }
+    else {
         cerr << "Método no implementado aún." << endl;
         return;
     }
