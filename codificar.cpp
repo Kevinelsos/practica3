@@ -72,8 +72,6 @@ void codificar(const string& nombreArchivo, int semilla, int metodo, int tipo) {
                 else
                     bloqueCodi = invertirCadaNBits(bloque, 3);
             }
-
-            cout << bloqueCodi <<"    "<< bloqueAnterior <<  endl;
             resultado += bloqueCodi;
             bloqueAnterior = bloque;
             pos += semilla;

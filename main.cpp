@@ -1,11 +1,12 @@
 #include <iostream>
 #include <string>
 #include "codificar.h"  // incluir el encabezado
+#include "decodificar.h"
 
 using namespace std;
 
 int main() {
-    string nombreArchivo;
+    string nombreArchivo, nombreSalida;
     int semilla;
     int metodo;
     int tipo;
@@ -13,8 +14,11 @@ int main() {
     cout << "===== CODIFICADOR DE ARCHIVOS =====" << endl;
 
     // Solicitar datos al usuario
-    cout << "Ingrese el nombre del archivo a codificar: ";
+    cout << "Ingrese el nombre del archivo a decodificar: ";
     cin >> nombreArchivo;
+
+    cout << "Ingrese el nombre del archivo a salida: ";
+    cin >> nombreSalida;
 
     cout << "Ingrese la semilla (n): ";
     cin >> semilla;
@@ -29,7 +33,10 @@ int main() {
     cin >> tipo;
 
     // Llamar a la función codificar
-    codificar(nombreArchivo, semilla, metodo, tipo);
+    //codificar(nombreArchivo,semilla, metodo, tipo);
+    decodificar(nombreArchivo,nombreSalida, semilla, metodo);
+
+
 
     cout << "\nProceso finalizado.\n";
 
