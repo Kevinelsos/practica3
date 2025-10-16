@@ -14,14 +14,13 @@ string invertirBits(const string& bits);
 string invertirCadaNBits(string bits, int n);
 int contarUnos(const string& bits);
 
-void codificar(const string& nombreArchivo, int semilla, int metodo, int tipo) {
+void codificar(const string& nombreArchivo, const string& nombreSalida, int semilla, int metodo) {
     ifstream entrada(nombreArchivo, ios::in | ios::binary);
     if (!entrada) {
         cerr << "Error al abrir el archivo de entrada." << endl;
         return;
     }
 
-    string nombreSalida = nombreArchivo + "_codificado.txt";
     ofstream salida(nombreSalida, ios::out | ios::binary);
     if (!salida) {
         cerr << "Error al crear el archivo de salida." << endl;
@@ -31,19 +30,7 @@ void codificar(const string& nombreArchivo, int semilla, int metodo, int tipo) {
     string contenido((istreambuf_iterator<char>(entrada)), istreambuf_iterator<char>());
 
     string bits;
-    if (tipo == 1) {
-        // trabajar con string
-        bits = textoABits(contenido);
-    } else if (tipo == 2) {
-        // trabajar con arreglo de char
-        vector<char> buffer(contenido.begin(), contenido.end());
-        bits.reserve(buffer.size() * 8);
-        for (char c : buffer)
-            bits += bitset<8>(static_cast<unsigned char>(c)).to_string();
-    } else {
-        cerr << "Tipo inválido (1 = string, 2 = char[])." << endl;
-        return;
-    }
+    bits = textoABits(contenido);
 
     string resultado;
     unsigned long pos = 0;
