@@ -8,15 +8,9 @@
 #include "decodificar.h"
 #include "codificar.h"
 #include "admin.h"
-
+#include "usuario.h"
 
 using namespace std;
-
-struct Usuario {
-    size_t cedula; // La cédula del usuario
-    string clave; // La clave del usuario
-    size_t saldo; // El saldo del usuario
-};
 
 static string trim(const string &s) {
     size_t a = s.find_first_not_of(" \t\r\n");
@@ -42,7 +36,7 @@ bool validar_admin() {
     ifstream in(archivoDescifrado);
     if (!in.is_open()) {
         cout << "No se pudo abrir el archivo descifrado '" << archivoDescifrado << "'.\n";
-        std::remove(archivoDescifrado.c_str());
+        remove(archivoDescifrado.c_str());
         return false;
     }
 
@@ -58,7 +52,7 @@ bool validar_admin() {
     in.close();
 
     // borramos el archivo temporal (ya no lo necesitamos)
-    std::remove(archivoDescifrado.c_str());
+    remove(archivoDescifrado.c_str());
 
     if (listaAdmins.empty()) {
         cout << "No se encontraron credenciales válidas en el archivo descifrado.\n";

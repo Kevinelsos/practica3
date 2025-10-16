@@ -3,8 +3,11 @@
 #include "codificar.h"  // incluir el encabezado
 #include "decodificar.h"
 #include "admin.h"
+#include "usuarios.h"
+#include "usuario.h"
 
 using namespace std;
+
 
 int main() {
     string nombreArchivo, nombreSalida;
@@ -62,8 +65,28 @@ int main() {
                         agregarUsuarios();
                     }
                     break;
-                case 2:
-                    break;
+                case 2:{
+                    Usuario usuarioActual;
+                    if(validarUsuario(usuarioActual)){
+                        int accion;
+                        cout << "Ingrese la accion que desea realizar(valor 1000COP): "<<endl;
+                        cout << "1. Consultar saldo"<<endl;
+                        cout << "2. Retirar dinero"<<endl;
+                        cout << "3. Regresar"<<endl;
+                        cout << "Accion: ";
+                        cin >> accion;
+                        switch (accion) {
+                        case 1:
+                            consultarSaldo(usuarioActual);
+                            break;
+                        case 2:
+                            retirarDinero(usuarioActual);
+                            break;
+                        default:
+                            break;
+                        }
+                    }
+                    break;}
                 case 3:
                     break;
                 default:
