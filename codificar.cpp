@@ -86,7 +86,7 @@ void codificar(const string& nombreArchivo, const string& nombreSalida, int semi
 
     // Escribir resultado
     salida << resultado;
-    cout << "Archivo codificado con éxito: " << nombreSalida << endl;
+    //cout << "Archivo codificado con éxito: " << nombreSalida << endl;
 }
 
 // --- Funciones auxiliares ---

@@ -2,6 +2,7 @@
 #include <string>
 #include "codificar.h"  // incluir el encabezado
 #include "decodificar.h"
+#include "admin.h"
 
 using namespace std;
 
@@ -15,7 +16,6 @@ int main() {
         cout << "3. Aplicacion"<<endl;
         cout << "Opcion: ";
         cin >> opcion;
-
         switch (opcion){
         case 1:
             // Codificacion
@@ -48,6 +48,30 @@ int main() {
             decodificar(nombreArchivo,nombreSalida,semilla,metodo);
             break;
         case 3:
+            while(1){
+                int opcion1;
+                cout << "Con que rol desea ingresar: "<<endl;
+                cout << "1. Administrador."<<endl;
+                cout << "2. Usuario."<<endl;
+                cout << "3. Regresar."<<endl;
+                cout << "ROL: ";
+                cin >> opcion1;
+                switch (opcion1){
+                case 1:
+                    if(validar_admin()){
+                        agregarUsuarios();
+                    }
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                default:
+                    cout << "ROL no disponible."<<endl;
+                    break;
+                }
+                if(opcion1==3) break;
+            }
             break;
         default:
             cout << "Opcion no implementada. Seleccione una disponible.";
@@ -55,7 +79,6 @@ int main() {
         }
     }
     cout << "\nProceso finalizado.\n";
-
     return 0;
 }
 

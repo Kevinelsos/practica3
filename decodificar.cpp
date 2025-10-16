@@ -79,7 +79,7 @@ void decodificar(const string& nombreArchivo, const string& nombreSalida, int se
 
     string cadena = BitsCaracter(resultado);
     salida << cadena;
-    cout << "Archivo decodificado con éxito: " << nombreSalida << endl;
+    //cout << "Archivo decodificado con éxito: " << nombreSalida << endl;
     return;
 }
 
