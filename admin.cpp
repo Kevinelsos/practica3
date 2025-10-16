@@ -50,15 +50,12 @@ bool validar_admin() {
         listaAdmins.push_back(t);
     }
     in.close();
-
-    // borramos el archivo temporal (ya no lo necesitamos)
     remove(archivoDescifrado.c_str());
 
     if (listaAdmins.empty()) {
         cout << "No se encontraron credenciales válidas en el archivo descifrado.\n";
         return false;
     }
-    // 3) Pedir nickname + contraseña hasta 3 intentos
     const int MAX_INTENTOS = 3;
     int contador = 0;
     while (contador < MAX_INTENTOS) {
@@ -68,14 +65,13 @@ bool validar_admin() {
         getline(cin, nick_ingresado);
         nick_ingresado = trim(nick_ingresado);
 
-        cout << "Ingrese la contraseña: ";
-        // para simplificar usamos getline; si quieres ocultar la clave, lo implementamos aparte
+        cout << "Ingrese la contrasena: ";
         getline(cin, clave_ingresada);
         clave_ingresada = trim(clave_ingresada);
 
         if (nick_ingresado.empty() || clave_ingresada.empty()) {
-            cout << "Nickname o contraseña vacíos — intenta de nuevo.\n";
-            continue; // no contamos como intento si fue vacío
+            cout << "Nickname o contrasena vacios — intenta de nuevo.\n";
+            continue;
         }
         string candidato = nick_ingresado + "-" + clave_ingresada;
         bool encontrado = false;
@@ -86,11 +82,11 @@ bool validar_admin() {
             }
         }
         if (encontrado) {
-            cout << "Contraseña correcta. Acceso concedido.\n";
+            cout << "Contrasena correcta. Acceso concedido.\n";
             return true;
         } else {
             contador++;
-            cout << "Contraseña incorrecta. Intento " << contador << " de " << MAX_INTENTOS << ".\n";
+            cout << "Contrasena incorrecta. Intento " << contador << " de " << MAX_INTENTOS << ".\n";
         }
     }
     cout << "Usuario bloqueado tras " << MAX_INTENTOS << " intentos.\n";
@@ -120,17 +116,14 @@ void agregarUsuarios() {
     while (toupper(opcion) == '1') {
         Usuario u;
 
-        cout << "\nIngrese la cédula del usuario: ";
+        cout << "\nIngrese la cedula del usuario: ";
         cin >> u.cedula;
         cin.ignore();
 
         cout << "Ingrese la clave del usuario: ";
         getline(cin, u.clave);
-
         cout << "Ingrese el saldo inicial: ";
         cin >> u.saldo;
-
-        // Escribir en formato cedula-clave-saldo
         out << u.cedula << "-" << u.clave << "-" << u.saldo << "\n";
         cout << "Usuario agregado exitosamente.\n";
 
@@ -141,7 +134,7 @@ void agregarUsuarios() {
 
     out.close();
     codificar(archivoDescifrado, archivoCodificado, semilla, metodo);
-    std::remove(archivoDescifrado.c_str());
+    remove(archivoDescifrado.c_str());
 
     cout << "Base de datos actualizada y cifrada correctamente.\n";
 }

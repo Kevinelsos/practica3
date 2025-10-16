@@ -45,7 +45,6 @@ void codificar(const string& nombreArchivo, const string& nombreSalida, int semi
 
             if (bloque.empty()) break;
 
-            // Primer bloque → invertir todo
             if (bloqueAnterior.empty()) {
                 bloqueCodi = invertirBits(bloque);
             } else {
@@ -80,13 +79,11 @@ void codificar(const string& nombreArchivo, const string& nombreSalida, int semi
         }
     }
     else {
-        cerr << "Método no implementado aún." << endl;
+        cerr << "Metodo no implementado aún." << endl;
         return;
     }
 
-    // Escribir resultado
     salida << resultado;
-    //cout << "Archivo codificado con éxito: " << nombreSalida << endl;
 }
 
 // --- Funciones auxiliares ---
@@ -105,12 +102,10 @@ string invertirBits(const string& bits) {
 }
 
 string invertirCadaNBits(string bits, int n) {
-    if (n <= 0) return bits;             // protección
-    // recorrer índices 0-based: el n-ésimo bit está en índice n-1, luego 2n-1, ...
+    if (n <= 0) return bits;
     for (size_t idx = n - 1; idx < bits.size(); idx += n) {
         if (bits[idx] == '0') bits[idx] = '1';
         else if (bits[idx] == '1') bits[idx] = '0';
-        // si hay otros caracteres, los dejamos intactos
     }
     return bits;
 }

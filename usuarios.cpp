@@ -79,7 +79,7 @@ bool validarUsuario(Usuario &usuarioEncontrado) {
     size_t cedulaIngresada;
     string claveIngresada;
 
-    cout << "Ingrese su cédula: ";
+    cout << "Ingrese su cedula: ";
     cin >> cedulaIngresada;
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
@@ -151,7 +151,7 @@ void consultarSaldo(Usuario &usuarioActual) {
         return;
     }
     usuarioActual.saldo -= costo;
-    cout << "Saldo actual (después del cobro de " << costo << "): " << usuarioActual.saldo << endl;
+    cout << "Saldo actual (despues del cobro de " << costo << "): " << usuarioActual.saldo << endl;
     actualizarSaldoEnArchivo(usuarioActual);
 }
 
