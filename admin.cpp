@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <algorithm>
 #include <cstdio>
 #include <vector>
 #include <sys/stat.h>
@@ -27,10 +26,9 @@ bool existeArchivo(const string &ruta) {
 bool validar_admin() {
     string archivoEncriptado = "sudo.txt";
     string archivoDescifrado = "sudo_dec.txt";
-    int n;
-    int metodo;
-    n = 4;
-    metodo = 1;
+    const int n = 4;
+    const int metodo = 1;
+
     decodificar(archivoEncriptado, archivoDescifrado, n, metodo);
 
     ifstream in(archivoDescifrado);
@@ -40,56 +38,71 @@ bool validar_admin() {
         return false;
     }
 
-    vector<string> listaAdmins;
+    // --- reemplazo de vector<string> listaAdmins ---
+    string *listaAdmins = nullptr;
+    int numAdmins = 0;
+    int capacidad = 0;
     string linea;
+
     while (getline(in, linea)) {
         string t = trim(linea);
-        if (t.empty()) continue;
-        // aceptar líneas del tipo "nick-clave", si la línea no contiene '-', la ignoramos
-        if (t.find('-') == string::npos) continue;
-        listaAdmins.push_back(t);
+        if (t.empty() || t.find('-') == string::npos) continue;
+
+        if (numAdmins == capacidad) {
+            int nuevaCapacidad = (capacidad == 0) ? 4 : capacidad * 2;
+            string *temp = new string[nuevaCapacidad];
+            for (int i = 0; i < numAdmins; i++)
+                temp[i] = listaAdmins[i];
+
+            delete[] listaAdmins;
+            listaAdmins = temp;
+            capacidad = nuevaCapacidad;
+        }
+
+        listaAdmins[numAdmins++] = t;
     }
+
     in.close();
     remove(archivoDescifrado.c_str());
 
-    if (listaAdmins.empty()) {
-        cout << "No se encontraron credenciales válidas en el archivo descifrado.\n";
+    if (numAdmins == 0) {
+        cout << "No se encontraron credenciales válidas.\n";
+        delete[] listaAdmins;
         return false;
     }
+
     const int MAX_INTENTOS = 3;
     int contador = 0;
+
     while (contador < MAX_INTENTOS) {
         string nick_ingresado, clave_ingresada;
         cout << "Ingrese el nickname: ";
-        cin >> ws;
-        getline(cin, nick_ingresado);
-        nick_ingresado = trim(nick_ingresado);
-
+        getline(cin >> ws, nick_ingresado);
         cout << "Ingrese la contrasena: ";
         getline(cin, clave_ingresada);
-        clave_ingresada = trim(clave_ingresada);
 
-        if (nick_ingresado.empty() || clave_ingresada.empty()) {
-            cout << "Nickname o contrasena vacios — intenta de nuevo.\n";
-            continue;
-        }
-        string candidato = nick_ingresado + "-" + clave_ingresada;
+        string candidato = trim(nick_ingresado) + "-" + trim(clave_ingresada);
         bool encontrado = false;
-        for (const auto &entry : listaAdmins) {
-            if (entry == candidato) {
+
+        for (int i = 0; i < numAdmins; i++) {
+            if (listaAdmins[i] == candidato) {
                 encontrado = true;
                 break;
             }
         }
+
         if (encontrado) {
             cout << "Contrasena correcta. Acceso concedido.\n";
+            delete[] listaAdmins;
             return true;
         } else {
             contador++;
             cout << "Contrasena incorrecta. Intento " << contador << " de " << MAX_INTENTOS << ".\n";
         }
     }
+
     cout << "Usuario bloqueado tras " << MAX_INTENTOS << " intentos.\n";
+    delete[] listaAdmins;
     return false;
 }
 

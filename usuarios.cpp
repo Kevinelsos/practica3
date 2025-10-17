@@ -6,7 +6,6 @@
 #include <cstdio>
 #include <sys/stat.h>
 #include <limits>
-#include <algorithm>
 #include "decodificar.h"
 #include "codificar.h"
 #include "usuario.h"
@@ -45,7 +44,9 @@ bool validarUsuario(Usuario &usuarioEncontrado) {
         return false;
     }
 
-    vector<Usuario> usuarios;
+    Usuario* usuarios = nullptr;
+    size_t numUsuarios = 0;
+
     string linea;
     while (getline(in, linea)) {
         linea = trim(linea);
@@ -57,12 +58,21 @@ bool validarUsuario(Usuario &usuarioEncontrado) {
         if (!getline(ss, clave, '-')) continue;
         if (!getline(ss, saldoStr, '-')) continue;
 
-        Usuario u;
         try {
-            u.cedula = stoull(cedulaStr);
-            u.clave = trim(clave);
-            u.saldo = stoull(saldoStr);
-            usuarios.push_back(u);
+            Usuario nuevo;
+            nuevo.cedula = stoull(cedulaStr);
+            nuevo.clave = trim(clave);
+            nuevo.saldo = stoull(saldoStr);
+
+            // --- aumentar el arreglo dinámico ---
+            Usuario* temp = new Usuario[numUsuarios + 1];
+            for (size_t i = 0; i < numUsuarios; ++i)
+                temp[i] = usuarios[i];
+            temp[numUsuarios] = nuevo;
+
+            delete[] usuarios;
+            usuarios = temp;
+            numUsuarios++;
         } catch (...) {
             continue;
         }
@@ -71,7 +81,7 @@ bool validarUsuario(Usuario &usuarioEncontrado) {
     in.close();
     remove(archivoDescifrado.c_str());
 
-    if (usuarios.empty()) {
+    if (numUsuarios == 0) {
         cout << "No hay usuarios registrados.\n";
         return false;
     }
@@ -86,15 +96,20 @@ bool validarUsuario(Usuario &usuarioEncontrado) {
     cout << "Ingrese su clave: ";
     getline(cin, claveIngresada);
 
-    for (const auto &u : usuarios) {
-        if (u.cedula == cedulaIngresada && u.clave == claveIngresada) {
-            usuarioEncontrado = u;
-            cout << "Ingreso exitoso. Bienvenido, usuario " << u.cedula << ".\n";
-            return true;
+    bool encontrado = false;
+    for (size_t i = 0; i < numUsuarios; ++i) {
+        if (usuarios[i].cedula == cedulaIngresada && usuarios[i].clave == claveIngresada) {
+            usuarioEncontrado = usuarios[i];
+            cout << "Ingreso exitoso. Bienvenido, usuario " << usuarios[i].cedula << ".\n";
+            encontrado = true;
+            break;
         }
     }
-    cout << "Credenciales incorrectas.\n";
-    return false;
+    delete[] usuarios;
+    if (!encontrado)
+        cout << "Credenciales incorrectas.\n";
+
+    return encontrado;
 }
 
 void actualizarSaldoEnArchivo(const Usuario &usuarioActual) {
@@ -104,10 +119,17 @@ void actualizarSaldoEnArchivo(const Usuario &usuarioActual) {
     const int metodo = 1;
 
     decodificar(archivoCodificado, archivoDescifrado, semilla, metodo);
-    ifstream in(archivoDescifrado);
-    vector<Usuario> usuarios;
-    string linea;
 
+    ifstream in(archivoDescifrado);
+    if (!in.is_open()) {
+        cout << "Error al abrir el archivo descifrado.\n";
+        return;
+    }
+
+    Usuario* usuarios = nullptr;
+    size_t numUsuarios = 0;
+
+    string linea;
     while (getline(in, linea)) {
         linea = trim(linea);
         if (linea.empty()) continue;
@@ -118,30 +140,44 @@ void actualizarSaldoEnArchivo(const Usuario &usuarioActual) {
         if (!getline(ss, clave, '-')) continue;
         if (!getline(ss, saldoStr, '-')) continue;
 
-        Usuario u;
         try {
-            u.cedula = stoull(cedulaStr);
-            u.clave = trim(clave);
-            u.saldo = stoull(saldoStr);
-            usuarios.push_back(u);
+            Usuario nuevo;
+            nuevo.cedula = stoull(cedulaStr);
+            nuevo.clave = trim(clave);
+            nuevo.saldo = stoull(saldoStr);
+
+            Usuario* temp = new Usuario[numUsuarios + 1];
+            for (size_t i = 0; i < numUsuarios; ++i)
+                temp[i] = usuarios[i];
+            temp[numUsuarios] = nuevo;
+
+            delete[] usuarios;
+            usuarios = temp;
+            numUsuarios++;
         } catch (...) {
             continue;
         }
     }
     in.close();
-    for (auto &u : usuarios) {
-        if (u.cedula == usuarioActual.cedula) {
-            u.saldo = usuarioActual.saldo;
+
+    // actualizar saldo
+    for (size_t i = 0; i < numUsuarios; ++i) {
+        if (usuarios[i].cedula == usuarioActual.cedula) {
+            usuarios[i].saldo = usuarioActual.saldo;
             break;
         }
     }
+
     ofstream out(archivoDescifrado, ios::trunc);
-    for (const auto &u : usuarios) {
-        out << u.cedula << "-" << u.clave << "-" << u.saldo << "\n";
+    for (size_t i = 0; i < numUsuarios; ++i) {
+        out << usuarios[i].cedula << "-" << usuarios[i].clave << "-" << usuarios[i].saldo << "\n";
     }
     out.close();
+
     codificar(archivoDescifrado, archivoCodificado, semilla, metodo);
     remove(archivoDescifrado.c_str());
+
+    delete[] usuarios; // liberar memoria
 }
 
 void consultarSaldo(Usuario &usuarioActual) {
